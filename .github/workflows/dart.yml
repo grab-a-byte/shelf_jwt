@@ -17,5 +17,8 @@ jobs:
       - name: Install dependencies
         run: dart pub get
 
+      - name: Run prebuild script
+        run: ./prebuild.sh
+
       - name: Run tests
         run: dart test
