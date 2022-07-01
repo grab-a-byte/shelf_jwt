@@ -1,8 +1,1 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
-library shelf_jwt;
-
-export 'src/shelf_jwt_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/shelf/authenticated_router.dart';
