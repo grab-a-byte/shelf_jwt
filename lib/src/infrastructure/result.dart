@@ -1,6 +1,8 @@
 class Result<T> {
   T? data;
-  bool get isSuccessfull => data == null;
+  bool get isSuccessfull => data != null;
+  bool get isError => !isSuccessfull;
+
   String? errorMessage;
 
   Result._({this.data, this.errorMessage});

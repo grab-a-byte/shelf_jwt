@@ -1,4 +1,3 @@
-//TODO Tests for datetime extension
 import 'package:shelf_jwt/src/extensions/datetime_extensions.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
