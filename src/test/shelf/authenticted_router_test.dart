@@ -56,7 +56,7 @@ void main() {
 
       final Response response = await router.getRouter().call(Request(
           'GET', Uri.parse('http://localhost:9999/test'),
-          headers: {'Authentication': adminToken}));
+          headers: {'authorization': adminToken}));
 
       expect(response.statusCode, 200);
       expect(await response.readAsString(), 'Hello World');
