@@ -18,6 +18,9 @@ Future<void> main() async {
   authRouter.authenticatedGet(
       '/authtest', ['User'], (request) => Response.ok('authenticated test'));
 
+  authRouter.authenticatedPost('/authtest', ['User'],
+      (request) => Response.ok('authenticated post test'));
+
   print('Running on port 8080');
   await io.serve(authRouter.getRouter(), 'localhost', 8080);
 }

@@ -61,29 +61,53 @@ class AuthenticatedRouter {
   void authenticatedGet(
       String route, List<String> validClaims, Handler handler) {
     _router.get(route, (Request req) {
-      var authHeader =
-          req.headers['Authorization'] ?? req.headers['authorization'];
-      if (authHeader == null) {
-        return Response(403, body: "Unathenticated");
+      final validReq = _validateRequest(req, validClaims);
+      if (validReq.succeeded) {
+        return handler(req);
+      } else {
+        return Response(validReq.responseCode!, body: validReq.errorMessage);
       }
-      if (authHeader.contains('Bearer')) {
-        authHeader = authHeader.replaceAll('Bearer', '').trim();
-      }
-      final jwt = decodeJwt(authHeader, _secret);
-      if (jwt.isError) {
-        return Response(403, body: jwt.errorMessage);
-      }
-      final jwtToken = jwt.data!;
-      if (validClaims.isNotEmpty &&
-          !validClaims.any(jwtToken.payload.entitlements!.contains)) {
-        return Response(403, body: "Unathenticated");
-      }
-      return handler(req);
     });
   }
 
   void authenticatedPost(
       String route, List<String> validClaims, Handler handler) {
-    throw Exception('NOT IMPLEMENTED');
+    _router.post(route, (Request req) {
+      final validReq = _validateRequest(req, validClaims);
+      if (validReq.succeeded) {
+        return handler(req);
+      } else {
+        return Response(validReq.responseCode!, body: validReq.errorMessage);
+      }
+    });
   }
+
+  AuthResult _validateRequest(Request req, List<String> validClaims) {
+    var authHeader =
+        req.headers['Authorization'] ?? req.headers['authorization'];
+    if (authHeader == null) {
+      return AuthResult(false, 403, "Unathenticated");
+    }
+    if (authHeader.contains('Bearer')) {
+      authHeader = authHeader.replaceAll('Bearer', '').trim();
+    }
+    final jwt = decodeJwt(authHeader, _secret);
+    if (jwt.isError) {
+      return AuthResult(false, 403, jwt.errorMessage);
+    }
+    final jwtToken = jwt.data!;
+    if (validClaims.isNotEmpty &&
+        !validClaims.any(jwtToken.payload.entitlements!.contains)) {
+      return AuthResult(false, 403, "Unathenticated");
+    }
+    return AuthResult(true, null, null);
+  }
+}
+
+class AuthResult {
+  bool succeeded;
+  int? responseCode;
+  String? errorMessage;
+
+  AuthResult(this.succeeded, this.responseCode, this.errorMessage);
 }

@@ -89,6 +89,51 @@ void main() {
 
       expect(response.statusCode, 403);
     });
+
+    test(
+        'Is able to make a post request to an authenticated endpoint with valid token',
+        () async {
+      final router = getAuthenticatedRouter(users: [adminUser])
+        ..authenticatedPost(
+            '/test', ['Admin'], (request) => Response.ok('Hello Post'));
+
+      final Response response = await router.getRouter().call(Request(
+          'POST', Uri.parse('http://localhost:9999/test'),
+          headers: {'authorization': adminToken}));
+
+      expect(response.statusCode, 200);
+      expect(await response.readAsString(), 'Hello Post');
+    });
+
+    test(
+        'Is unable to make a get request to an authenticated endpoint with no token',
+        () async {
+      final router = getAuthenticatedRouter(users: [adminUser])
+        ..authenticatedPost(
+            '/test', ['Admin'], (request) => Response.ok('Hello Post'));
+
+      final Response response = await router
+          .getRouter()
+          .call(Request('POST', Uri.parse('http://localhost:9999/test')));
+
+      expect(response.statusCode, 403);
+    });
+
+    test(
+        'Is unable to make a get request to an authenticated endpoint without valid entitlements',
+        () async {
+      final router = getAuthenticatedRouter(users: [adminUser])
+        ..authenticatedPost(
+            '/test', ['Super'], (request) => Response.ok('Hello Post'));
+
+      final Response response = await router.getRouter().call(Request(
+          'POST', Uri.parse('http://localhost:9999/test'),
+          headers: {'Authentication': adminToken}));
+
+      expect(response.statusCode, 403);
+    });
+
+    //TODO Add test for add login method
   });
 }
 
