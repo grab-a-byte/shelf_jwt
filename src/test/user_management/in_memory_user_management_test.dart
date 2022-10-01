@@ -10,7 +10,7 @@ void main() {
       var user = User('bob', 'ross', ['painting', 'happiness']);
       userManager.addUser(user);
       var retrievedUser = userManager.getUser('bob', 'ross');
-      expect(retrievedUser, user);
+      expect(retrievedUser.data!, user);
     });
   });
 }
